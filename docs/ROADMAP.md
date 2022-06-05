@@ -1,7 +1,7 @@
 # road map
 
 ### version 1: minum viable product
-- [ ] Call commands from parsed input
+- [X] Call commands from parsed input
 - [ ] Drive API login
 - [ ] user flow and config
 - [ ] Drive object storage
