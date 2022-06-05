@@ -1,12 +1,15 @@
+import os
 import cli
 import user
+import gdrive
 from rich.console import Console
 
 console = Console()
 developerMode = True
 
 def main():
-    
+    console.print(os.getcwd(), style='yellow')
+    gdrive.validate()
     while True:
         ui = cli.listen()
         params = cli.parse(ui)
