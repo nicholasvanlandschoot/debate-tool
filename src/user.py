@@ -1,5 +1,8 @@
 from sys import exit as leave
-from src import storage
+
+try: import storage
+except: from src import storage
+
 from rich.console import Console
 
 console = Console()
@@ -24,7 +27,6 @@ def URoot(params):
     else:
         console.print("not valid, can not store new root", style="red")
         return None
-
 
 def UExit(params):
     leave()

@@ -1,11 +1,19 @@
 import json
 import os
-import cli
-import storage
-import user
-import gdrive
 from rich.console import Console
 from rich.text import Text
+
+try: import cli
+except: from src import cli
+
+try: import gdrive
+except: from src import gdrive
+
+try: import storage
+except: from src import storage
+
+try: import user
+except: from src import user
 
 console = Console()
 developerMode = True
