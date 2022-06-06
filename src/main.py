@@ -8,8 +8,6 @@ console = Console()
 developerMode = True
 
 def main():
-    
-    console.print(os.getcwd(), style='yellow')
     gdrive.validate()
     while True:
         ui = cli.listen()

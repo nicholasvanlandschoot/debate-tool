@@ -52,3 +52,4 @@ def validate():
     except HttpError as e:
         if main.developerMode: console.print(f'Error authenticating drive → {e}', style='red')
         else: console.print(f'Error authenticating drive', style='red')
+        return None
