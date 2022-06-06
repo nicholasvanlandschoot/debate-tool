@@ -8,7 +8,6 @@ class TestStorage(unittest.TestCase):
         test2 = store_root('')
         self.assertEqual(test1, '{"root": "123456I"}')
         self.assertEqual(test2, '{"root": ""}')
-        
 
 if __name__ == "__main__":
     unittest.main()
