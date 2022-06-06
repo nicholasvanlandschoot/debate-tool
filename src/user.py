@@ -1,37 +1,44 @@
-from sys import exit as leave
+import sys
 
-try: import storage
-except: from src import storage
+# ~ import directly when called from within src otherwise call from src
+try:
+    import storage
+except:
+    from src import storage
 
 from rich.console import Console
 
 console = Console()
 
+
 def URoot(params):
     _, splitted, _, argdict, flags = params
     _root = None
 
-    if ("-l" in flags):
+    # ~ take any word after -l flag as new root
+    if "-l" in flags:
         try:
             _root = argdict["-l"]
             storage.store_root(_root)
-            return(_root)
+            return _root
         except:
             pass
 
-    if(len(splitted) > 1):
+    # ~ if no flag found take first argument as root
+    if len(splitted) > 1:
         _root = splitted[1]
         storage.store_root(_root)
-        return(_root)
+        return _root
 
+    # ~ print fail message and return None for test
     else:
         console.print("not valid, can not store new root", style="red")
         return None
 
-def UExit(params):
-    leave()
 
-functions={
-    "exit":UExit,
-    "root":URoot
-}
+def UExit(params):
+    sys.exit()
+
+
+# ~ bind strings that user can pass as commands to functions
+functions = {"exit": UExit, "root": URoot}

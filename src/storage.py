@@ -6,22 +6,37 @@ relpath = os.getcwd()
 
 global root
 
-def store_root(_root):
+
+def store_root(_root) -> dict:
+    """Stores new root string to json under "root"
+
+    Args:
+        _root (string): driveId as string
+
+    Returns:
+        dict: {'root': 'new rootId'}
+    """
+
+    # ~ store new root in memory
     global root
     root = _root
 
+    # ~ if config exists load -> jsonObj. Otherwise jsonObj -> empty dict
     jsonObj = {}
-    if os.path.exists(f'{relpath}/userdata/config.json'):
+    if os.path.exists(f"{relpath}/userdata/config.json"):
         try:
-            with open(f'{relpath}/userdata/config.json', 'r') as f:
+            with open(f"{relpath}/userdata/config.json", "r") as f:
                 jsonObj = json.load(f)
         except:
             pass
-    
-    jsonObj.update({'root':_root})
+
+    # ~ update root in dict then serialize
+    jsonObj.update({"root": _root})
     jsonObj = json.dumps(jsonObj)
 
-    with open(f'{relpath}/userdata/config.json', 'w') as f:
+    # ~ write dict to config
+    with open(f"{relpath}/userdata/config.json", "w") as f:
         f.write(jsonObj)
 
-    return jsonObj
+    # ~ return root from dict for test
+    return json.loads(jsonObj)["root"]
