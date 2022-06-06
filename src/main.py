@@ -1,13 +1,25 @@
+import json
 import os
 import cli
+import storage
 import user
 import gdrive
 from rich.console import Console
+from rich.text import Text
 
 console = Console()
 developerMode = True
 
 def main():
+    try:
+        with open(f'{storage.relpath}/userdata/config.json') as f:
+            jsonObj = json.load(f)
+        storage.root = jsonObj["root"]
+    except:
+        text = Text('enter root % ')
+        text.stylize('cyan')
+        storage.store_root(console.input(text))
+
     gdrive.validate()
     while True:
         ui = cli.listen()
