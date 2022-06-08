@@ -26,7 +26,6 @@ global service
 service = None
 console = Console()
 
-
 def validate() -> build:
     """Validate credentials and enable OAuth authentication
 
@@ -75,3 +74,19 @@ def validate() -> build:
 
         # ~ Return none to fail test
         return None
+
+def ls(root):
+    page_token = None
+    files = []
+    while True:
+        
+        response = service.files().list(q=f"parents = '{root}'",
+                                        fields='nextPageToken, files(id, name)',
+                                        pageToken=page_token).execute()
+        for file in response.get('files', []):
+            files.append(file)
+
+        page_token = response.get('nextPageToken', None)
+        if page_token is None:
+            break
+    return files
