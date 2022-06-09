@@ -11,6 +11,7 @@ except:
 console = Console()
 developerMode = True
 
+
 def main() -> None:
 
     # ~ set root if it exists in config otherwise get it from user and store it
@@ -26,7 +27,7 @@ def main() -> None:
     # ~ Validate user credentials or login using OAuth
     gdrive.validate()
 
-    #~ load drive objects from drive 
+    # ~ load drive objects from drive
     storage.load_drive(storage.root)
 
     # ~ As the application runs listen to and parse input
