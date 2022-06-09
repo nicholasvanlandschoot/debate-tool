@@ -4,28 +4,12 @@ from rich.text import Text
 
 # ~ import directly when called from within src otherwise call from src
 try:
-    import cli
+    import cli, gdrive, storage, user
 except:
-    from src import cli
-
-try:
-    import gdrive
-except:
-    from src import gdrive
-
-try:
-    import storage
-except:
-    from src import storage
-
-try:
-    import user
-except:
-    from src import user
+    from src import cli, gdrive, storage, user
 
 console = Console()
 developerMode = True
-
 
 def main() -> None:
 
@@ -41,6 +25,9 @@ def main() -> None:
 
     # ~ Validate user credentials or login using OAuth
     gdrive.validate()
+
+    #~ load drive objects from drive 
+    storage.load_drive(storage.root)
 
     # ~ As the application runs listen to and parse input
     while True:
