@@ -10,20 +10,23 @@ from rich.console import Console
 
 console = Console()
 
+
 def Ucd(params):
     _, splitted, _, argdict, flags = params
-    _path = 'root'
+    _path = "root"
 
-    if('-l' in flags):
-        try: 
-            _path = storage.objects['name'][argdict['-l']].path
-        except: pass
-
-    elif(len(splitted) == 2):
+    if "-l" in flags:
         try:
-            _path = storage.objects['name'][splitted[1].replace("\'", "")].path
-        except: pass
-    
+            _path = storage.objects["name"][argdict["-l"]].path
+        except:
+            pass
+
+    elif len(splitted) == 2:
+        try:
+            _path = storage.objects["name"][splitted[1].replace("'", "")].path
+        except:
+            pass
+
     cli.cd(_path)
 
 
@@ -31,22 +34,25 @@ def UList(params):
     _, splitted, _, argdict, flags = params
     _path = cli.path
 
-    if('-l' in flags):
-        try: 
-            _path = storage.objects['name'][argdict['-l']].path
-        except: pass
-
-    elif(len(splitted) == 2):
+    if "-l" in flags:
         try:
-            _path = storage.objects['name'][splitted[1].replace("\'", "")].path
-        except: pass
-    
+            _path = storage.objects["name"][argdict["-l"]].path
+        except:
+            pass
+
+    elif len(splitted) == 2:
+        try:
+            _path = storage.objects["name"][splitted[1].replace("'", "")].path
+        except:
+            pass
+
     storage.ls(_path)
+
 
 def USync(params):
     _, splitted, _, argdict, flags = params
 
-    _root = storage.objects['path'][cli.path].id
+    _root = storage.objects["path"][cli.path].id
 
     if "-l" in flags:
         try:
@@ -54,7 +60,7 @@ def USync(params):
         except:
             pass
     elif len(splitted) == 2:
-        _root = storage.objects["name"][splitted[1].replace("\'", "")].id
+        _root = storage.objects["name"][splitted[1].replace("'", "")].id
 
     storage.sync_drive(_root)
 
@@ -89,4 +95,4 @@ def UExit(params):
 
 
 # ~ bind strings that user can pass as commands to functions
-functions = {"exit": UExit, "root": URoot, "sync": USync, "ls":UList, "cd": Ucd}
+functions = {"exit": UExit, "root": URoot, "sync": USync, "ls": UList, "cd": Ucd}

@@ -29,7 +29,11 @@ def main() -> None:
     gdrive.validate()
 
     # ~ load drive objects from drive
-    storage.load_drive(storage.root)
+    try:
+        storage.load_json()
+        rootExists = storage.objects["name"]["root"]
+    except:
+        storage.load_drive(storage.root)
 
     # ~ As the application runs listen to and parse input
     while True:
@@ -42,7 +46,9 @@ def main() -> None:
             user.functions[called](params)
         except Exception as e:
             if developerMode:
-                console.print(f"Command failed → error {traceback.print_exc()}", style="red")
+                console.print(
+                    f"Command failed → error {traceback.print_exc()}", style="red"
+                )
                 console.print(traceback.print_exc(), style="red")
             else:
                 console.print(f"Command does not exist", style="red")
@@ -50,4 +56,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-    

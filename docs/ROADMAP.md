@@ -7,7 +7,7 @@
 - [X] Drive object storage
 - [X] Fetch objects
 - [X] Sync
-- [ ] ls/cd
+- [X] ls/cd
 - [ ] create/delete
 - [ ] save/delete snippet
 - [ ] insert snippets

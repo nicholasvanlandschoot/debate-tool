@@ -77,11 +77,14 @@ def validate() -> build:
         return None
 
 
-def ls(root):
+def ls(root) -> list:
+    '''Get all direct children of a drive object'''
     page_token = None
     files = []
-    while True:
 
+    while True: 
+
+        #~ Query google drive API for all direct children of current root
         response = (
             service.files()
             .list(
@@ -91,10 +94,14 @@ def ls(root):
             )
             .execute()
         )
+
+        #~ add all children to return array
         for file in response.get("files", []):
             files.append(file)
 
+        #~ keep going if there are more pages with children
         page_token = response.get("nextPageToken", None)
         if page_token is None:
             break
+        
     return files

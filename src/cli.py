@@ -1,11 +1,13 @@
 from rich.console import Console
 from rich.text import Text
 
-try: import storage
-except: from src import storage
+try:
+    import storage
+except:
+    from src import storage
 
 console = Console()
-path = 'root'
+path = "root"
 
 
 def parse(str) -> tuple:
@@ -57,9 +59,12 @@ def listen() -> str:
     # ~ display text and return new input
     return console.input(text)
 
-def cd(_root):
+
+def cd(_root) -> None:
+    """Change path in terminal and defualt ls/cd etc."""
+
     global path
-   # try:
-    path = storage.objects['path'][_root.replace("\'", "")].path
-   # except:
-    #    console.print('does not exist', style='red')
+    try:
+        path = storage.objects["path"][_root.replace("'", "")].path
+    except:
+        console.print("does not exist", style="red")

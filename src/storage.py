@@ -27,8 +27,11 @@ objects = {
 class DriveObject:
     def __init__(self, name, id, path) -> None:
         """Initalize and store in objects['name'],['id'], ['path'] and objects_all list"""
-        if(name in objects['name']):
-            console.print(f'cannot add drive Object {name} at {path} because a duplicate name exists', style='yellow')
+        if name in objects["name"]:
+            console.print(
+                f"cannot add drive Object {name} at {path} because a duplicate name exists",
+                style="yellow",
+            )
             return None
 
         self.name = name
@@ -60,11 +63,11 @@ class DriveObject:
     def _forget(self):
 
         # ~ remove from all collections then move to garbage
-        #% Constant {O(C_1 + 3C_2)}
         objects_all.remove(self)
         del objects["id"][self.id]
         del objects["path"][self.path]
         del objects["name"][self.name]
+
         del self
 
 
@@ -77,11 +80,14 @@ def store_root(_root) -> dict:
     Returns:
         dict: {'root': 'new rootId'}
     """
-
     # ~ store new root in memory
     global root
     root = _root
 
+    objs = [i for i in objects_all]
+    for i in objs:
+        i._forget()
+    
     # ~ if config exists load -> jsonObj. Otherwise jsonObj -> empty dict
     jsonObj = {}
     if os.path.exists(f"{relpath}/userdata/config.json"):
@@ -99,27 +105,46 @@ def store_root(_root) -> dict:
     with open(f"{relpath}/userdata/config.json", "w") as f:
         f.write(jsonObj)
 
+    with open(f"{relpath}/userdata/driveObjects.json", "w") as f:
+        f.write("{}")
+    
+
     console.print(f"changed root to {_root}", style="green")
+
+    load_drive(_root)
 
     # ~ return root from dict for test
     return json.loads(jsonObj)["root"]
 
-def ls(_path):
+
+def ls(_path) -> None:
+    '''Print ls to screen'''
+
     for i in objects_all:
+        #~ get path of object s
         path = str(i.path)
-        if( _path in path):
-            console.print(path, style='#1b83e3')
 
-def load_drive(_root):
-    resync = [i for i in objects_all if objects["id"][_root].path in i.path]
-    for i in resync:
-        i._forget()
+        #~ if it is child of path print it
+        if _path in path:
+            console.print(path, style="#1b83e3")
 
+
+def load_json() -> None:
+    console.print("loading local objects...", style='green')
+    with open(f"{relpath}/userdata/driveObjects.json", "r") as f:
+        jsonObj = json.load(f)
+    for i in jsonObj:
+        DriveObject(jsonObj[i]['name'], jsonObj[i]['id'], jsonObj[i]['path'])
+        console.print(jsonObj[i]['path'])
+    console.print("done loading", style='green')
+
+
+def load_drive(_root) -> None:
     DriveObject("root", _root, "root")
 
     def rload_drive(_root):
 
-        #~ get parent path
+        # ~ get parent path
         try:
             path = objects["id"][_root].path
         except:
@@ -133,40 +158,45 @@ def load_drive(_root):
             name = i.get("name")
             id = i.get("id")
 
-            #~ remove spaces and print path
+            # ~ remove spaces and print path
             name = name.replace(" ", "")
 
             console.print(f"{path}/{name}")
 
-            #~ init and store drive object
+            # ~ init and store drive object
             DriveObject(name, id, f"{path}/{name}")
 
-            #~ Check to see if is folder or items, decreases fetch time as checking item never yields a result
-            if(i.get('mimeType') == 'application/vnd.google-apps.folder'):
+            # ~ Check to see if is folder or items, decreases fetch time as checking item never yields a result
+            if i.get("mimeType") == "application/vnd.google-apps.folder":
 
-                #~ create thread to fetch all children 
+                # ~ create thread to fetch all children
 
                 th = threading.Thread(target=rload_drive(id))
                 th.start()
-    
 
     startTime = time.perf_counter()
     rload_drive(_root)
-    console.print(f'{time.perf_counter() - startTime} seconds to fetch all drive objects')
+    console.print(
+        f"{time.perf_counter() - startTime} seconds to fetch all drive objects"
+    )
 
-def sync_drive(_root):
-    
+
+def sync_drive(_root) -> None:
+
+    #~ Get properties of root object
     props = [objects["id"][_root].name, _root, objects["id"][_root].path]
 
+    #~ delete any objects under root path so they can be resynced later
     resync = [i for i in objects_all if objects["id"][_root].path in i.path]
     for i in resync:
         i._forget()
 
+    #~ Recreate root object
     DriveObject(props[0], props[1], props[2])
 
     def rload_drive(_root):
 
-        #~ get parent path
+        # ~ get parent path
         try:
             path = objects["id"][_root].path
         except:
@@ -180,23 +210,22 @@ def sync_drive(_root):
             name = i.get("name")
             id = i.get("id")
 
-            #~ remove spaces and print path
+            # ~ remove spaces and print path
             name = name.replace(" ", "")
 
             console.print(f"{path}/{name}")
 
-            #~ Check to see if is folder or items, decreases fetch time as checking item never yields a result
-            if(i.get('mimeType') == 'application/vnd.google-apps.folder'):
+            # ~ Check to see if is folder or items, decreases fetch time as checking item never yields a result
+            if i.get("mimeType") == "application/vnd.google-apps.folder":
 
-                #~ init and store drive object
+                # ~ init and store drive object
                 DriveObject(name, id, f"{path}/{name}")
 
-                #~ create thread to fetch all children 
+                # ~ create thread to fetch all children
 
                 th = threading.Thread(target=rload_drive(id))
                 th.start()
-    
 
     startTime = time.perf_counter()
     rload_drive(_root)
-    console.print(f'{time.perf_counter() - startTime} seconds to sync')
+    console.print(f"{time.perf_counter() - startTime} seconds to sync")
