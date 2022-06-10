@@ -4,7 +4,6 @@ import subprocess
 import sys
 
 
-
 console = Console()
 
 console.print("configuring debate-tool", style="blue")

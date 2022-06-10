@@ -4,8 +4,8 @@
 - [X] Call commands from parsed input
 - [X] Drive API login
 - [X] user flow and config
-- [ ] Drive object storage
-- [ ] Fetch objects
+- [X] Drive object storage
+- [X] Fetch objects
 - [ ] Sync
 - [ ] ls/cd
 - [ ] create/delete

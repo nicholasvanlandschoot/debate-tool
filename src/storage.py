@@ -2,6 +2,7 @@ import json
 import os
 import sys
 import threading
+import time
 from rich.console import Console
 
 try:
@@ -15,6 +16,7 @@ console = Console()
 global root
 root = None
 
+
 objects_all = []
 objects = {
     "name": {},
@@ -26,6 +28,9 @@ objects = {
 class DriveObject:
     def __init__(self, name, id, path) -> None:
         """Initalize and store in objects['name'],['id'], ['path'] and objects_all list"""
+        if(name in objects['name']):
+            console.print(f'cannot add drive Object {name} at {path} because a duplicate name exists', style='yellow')
+            return None
 
         self.name = name
         self.id = id
@@ -110,7 +115,54 @@ def load_drive(_root):
 
     def rload_drive(_root):
 
-        #% O(N)
+        #~ get parent path
+        try:
+            path = objects["id"][_root].path
+        except:
+            return None
+
+        # ~ get children to recur
+        children = gdrive.ls(_root)
+
+        # ~ loop through all children and reccur on theirs
+        for i in children:
+            name = i.get("name")
+            id = i.get("id")
+
+            #~ remove spaces and print path
+            name = name.replace(" ", "")
+
+            console.print(f"{path}/{name}")
+
+            #~ Check to see if is folder or items, decreases fetch time as checking item never yields a result
+            if(i.get('mimeType') == 'application/vnd.google-apps.folder'):
+
+                #~ init and store drive object
+                DriveObject(name, id, f"{path}/{name}")
+
+                #~ create thread to fetch all children 
+
+                th = threading.Thread(target=rload_drive(id))
+                th.start()
+    
+
+    startTime = time.perf_counter()
+    rload_drive(_root)
+    console.print(f'{time.perf_counter() - startTime} seconds to fetch all drive objects')
+
+def sync_drive(_root):
+    
+    props = [objects["id"][_root].name, _root, objects["id"][_root].path]
+
+    resync = [i for i in objects_all if objects["id"][_root].path in i.path]
+    for i in resync:
+        i._forget()
+
+    DriveObject(props[0], props[1], props[2])
+
+    def rload_drive(_root):
+
+        #~ get parent path
         path = objects["id"][_root].path
 
         # ~ get children to recur
@@ -121,13 +173,23 @@ def load_drive(_root):
             name = i.get("name")
             id = i.get("id")
 
+            #~ remove spaces and print path
             name = name.replace(" ", "")
 
             console.print(f"{path}/{name}")
 
-            DriveObject(name, id, f"{path}/{name}")
+            #~ Check to see if is folder or items, decreases fetch time as checking item never yields a result
+            if(i.get('mimeType') == 'application/vnd.google-apps.folder'):
 
-            thread = threading.Thread(target=rload_drive(id))
-            thread.start()
+                #~ init and store drive object
+                DriveObject(name, id, f"{path}/{name}")
 
+                #~ create thread to fetch all children 
+
+                th = threading.Thread(target=rload_drive(id))
+                th.start()
+    
+
+    startTime = time.perf_counter()
     rload_drive(_root)
+    console.print(f'{time.perf_counter() - startTime} seconds to sync')

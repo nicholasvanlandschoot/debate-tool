@@ -1,6 +1,7 @@
 import json
 from rich.console import Console
 from rich.text import Text
+import traceback
 
 # ~ import directly when called from within src otherwise call from src
 try:
@@ -41,7 +42,8 @@ def main() -> None:
             user.functions[called](params)
         except Exception as e:
             if developerMode:
-                console.print(f"Command failed → error {e}", style="red")
+                console.print(f"Command failed → error {traceback.print_exc()}", style="red")
+                console.print(traceback.print_exc(), style="red")
             else:
                 console.print(f"Command does not exist", style="red")
 

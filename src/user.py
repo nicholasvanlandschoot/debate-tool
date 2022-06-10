@@ -2,13 +2,29 @@ import sys
 
 # ~ import directly when called from within src otherwise call from src
 try:
-    import storage
+    import storage, gdrive
 except:
-    from src import storage
+    from src import storage, gdrive
 
 from rich.console import Console
 
 console = Console()
+
+
+def USync(params):
+    _, splitted, _, argdict, flags = params
+
+    _root = storage.root
+
+    if "-l" in flags:
+        try:
+            _root = storage.objects["name"][argdict["-l"]].id
+        except:
+            pass
+    elif len(splitted) == 2:
+        _root = storage.objects["name"][splitted[1].replace("\'", "")].id
+
+    storage.sync_drive(_root)
 
 
 def URoot(params):
@@ -41,4 +57,4 @@ def UExit(params):
 
 
 # ~ bind strings that user can pass as commands to functions
-functions = {"exit": UExit, "root": URoot}
+functions = {"exit": UExit, "root": URoot, "sync": USync}

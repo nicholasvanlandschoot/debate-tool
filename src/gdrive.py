@@ -86,7 +86,7 @@ def ls(root):
             service.files()
             .list(
                 q=f"parents = '{root}'",
-                fields="nextPageToken, files(id, name)",
+                fields="nextPageToken, files(id, name, mimeType)",
                 pageToken=page_token,
             )
             .execute()
