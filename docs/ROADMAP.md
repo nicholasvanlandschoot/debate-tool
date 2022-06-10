@@ -6,7 +6,7 @@
 - [X] user flow and config
 - [X] Drive object storage
 - [X] Fetch objects
-- [ ] Sync
+- [X] Sync
 - [ ] ls/cd
 - [ ] create/delete
 - [ ] save/delete snippet

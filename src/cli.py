@@ -1,7 +1,11 @@
 from rich.console import Console
 from rich.text import Text
 
+try: import storage
+except: from src import storage
+
 console = Console()
+path = 'root'
 
 
 def parse(str) -> tuple:
@@ -47,8 +51,15 @@ def listen() -> str:
     """
 
     # ~ create and stylize text to display on the terminal with the input method
-    text = Text(" % ")
-    text.stylize("cyan")
+    text = Text(f"{path} % ")
+    text.stylize("bold cyan")
 
     # ~ display text and return new input
     return console.input(text)
+
+def cd(_root):
+    global path
+   # try:
+    path = storage.objects['path'][_root.replace("\'", "")].path
+   # except:
+    #    console.print('does not exist', style='red')

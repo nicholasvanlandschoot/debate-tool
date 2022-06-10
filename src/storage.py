@@ -16,7 +16,6 @@ console = Console()
 global root
 root = None
 
-
 objects_all = []
 objects = {
     "name": {},
@@ -105,6 +104,11 @@ def store_root(_root) -> dict:
     # ~ return root from dict for test
     return json.loads(jsonObj)["root"]
 
+def ls(_path):
+    for i in objects_all:
+        path = str(i.path)
+        if( _path in path):
+            console.print(path, style='#1b83e3')
 
 def load_drive(_root):
     resync = [i for i in objects_all if objects["id"][_root].path in i.path]
@@ -134,11 +138,11 @@ def load_drive(_root):
 
             console.print(f"{path}/{name}")
 
+            #~ init and store drive object
+            DriveObject(name, id, f"{path}/{name}")
+
             #~ Check to see if is folder or items, decreases fetch time as checking item never yields a result
             if(i.get('mimeType') == 'application/vnd.google-apps.folder'):
-
-                #~ init and store drive object
-                DriveObject(name, id, f"{path}/{name}")
 
                 #~ create thread to fetch all children 
 
@@ -163,7 +167,10 @@ def sync_drive(_root):
     def rload_drive(_root):
 
         #~ get parent path
-        path = objects["id"][_root].path
+        try:
+            path = objects["id"][_root].path
+        except:
+            return None
 
         # ~ get children to recur
         children = gdrive.ls(_root)
