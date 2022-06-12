@@ -35,7 +35,7 @@ def UCreate(params):
     _, splitted, _, argdict, flags = params
 
     _name = "Untitled"
-    _parent = storage.objects["name"]["root"].id
+    _parent = storage.objects["path"][cli.path].id
     _type = "application/vnd.google-apps.document"
 
     if "-n" in flags:
