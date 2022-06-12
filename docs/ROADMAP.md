@@ -8,6 +8,6 @@
 - [X] Fetch objects
 - [X] Sync
 - [X] ls/cd
-- [ ] create/delete
+- [X] create/delete
 - [ ] save/delete snippet
 - [ ] insert snippets
