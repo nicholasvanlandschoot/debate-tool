@@ -10,6 +10,58 @@ from rich.console import Console
 
 console = Console()
 
+def UDelete(params):
+    _, splitted, _, argdict, flags = params
+
+    _id = None
+    if "-l" in flags:
+        try:
+            _id = storage.objects["name"][argdict["-l"]].id
+        except:
+            pass
+
+    elif len(splitted) > 1:
+        try: 
+            _id = storage.objects["name"][splitted[1]].id
+        except:
+            pass
+
+    if _id != None: 
+        gdrive.deleteFile(_id)
+
+
+def UCreate(params):
+    _, splitted, _, argdict, flags = params
+
+    _name = "Untitled"
+    _parent = storage.objects["name"]["root"].id
+    _type = 'application/vnd.google-apps.document'
+    
+    if "-n" in flags:
+        try:
+            _name = argdict["-n"]
+        except:
+            pass
+    elif len(splitted) > 1:
+        _name = splitted[1]
+    else:
+        console.print("No name given, creating: Untitled", style="yellow")
+
+    if "-l" in flags:
+        try:
+            _path = argdict["-l"]
+        except:
+            pass
+    _path = f'{storage.objects["id"][_parent].path}/{_name}'
+
+    if "-folder" in flags:
+        _type = 'application/vnd.google-apps.folder'
+    elif "-doc" in flags:
+        _type = 'application/vnd.google-apps.document'
+
+
+    gdrive.create(_name, _parent, _path, _type)
+
 
 def Ucd(params):
     _, splitted, _, argdict, flags = params
@@ -46,7 +98,7 @@ def UList(params):
         except:
             pass
 
-    storage.ls(_path)
+    cli.ls(_path)
 
 
 def USync(params):
@@ -95,4 +147,12 @@ def UExit(params):
 
 
 # ~ bind strings that user can pass as commands to functions
-functions = {"exit": UExit, "root": URoot, "sync": USync, "ls": UList, "cd": Ucd}
+functions = {
+    "exit": UExit,
+    "root": URoot,
+    "sync": USync,
+    "ls": UList,
+    "cd": Ucd,
+    "create": UCreate,
+    "delete": UDelete
+}

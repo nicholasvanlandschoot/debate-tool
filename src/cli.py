@@ -68,3 +68,18 @@ def cd(_root) -> None:
         path = storage.objects["path"][_root.replace("'", "")].path
     except:
         console.print("does not exist", style="red")
+
+    return None
+
+
+def ls(_path) -> None:
+    """Print ls to screen"""
+
+    for i in storage.objects_all:
+        # ~ get path of object s
+        path = str(i.path)
+
+        # ~ if it is child of path print it
+        if _path in path:
+            console.print(path, style="#1b83e3")
+    return None

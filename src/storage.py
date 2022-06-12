@@ -8,7 +8,7 @@ from rich.console import Console
 try:
     import gdrive
 except:
-    from src import gdrives
+    from src import gdrive
 
 relpath = os.getcwd()
 console = Console()
@@ -62,6 +62,16 @@ class DriveObject:
 
     def _forget(self):
 
+        with open (f"{relpath}/userdata/driveObjects.json", "r") as f:
+            jsonObj = json.load(f)
+        
+        del jsonObj[self.name]
+        jsonObj = json.dumps(jsonObj)
+
+        with open (f"{relpath}/userdata/driveObjects.json", "w") as f:
+            f.write(jsonObj)
+
+
         # ~ remove from all collections then move to garbage
         objects_all.remove(self)
         del objects["id"][self.id]
@@ -87,7 +97,7 @@ def store_root(_root) -> dict:
     objs = [i for i in objects_all]
     for i in objs:
         i._forget()
-    
+
     # ~ if config exists load -> jsonObj. Otherwise jsonObj -> empty dict
     jsonObj = {}
     if os.path.exists(f"{relpath}/userdata/config.json"):
@@ -107,7 +117,6 @@ def store_root(_root) -> dict:
 
     with open(f"{relpath}/userdata/driveObjects.json", "w") as f:
         f.write("{}")
-    
 
     console.print(f"changed root to {_root}", style="green")
 
@@ -117,26 +126,14 @@ def store_root(_root) -> dict:
     return json.loads(jsonObj)["root"]
 
 
-def ls(_path) -> None:
-    '''Print ls to screen'''
-
-    for i in objects_all:
-        #~ get path of object s
-        path = str(i.path)
-
-        #~ if it is child of path print it
-        if _path in path:
-            console.print(path, style="#1b83e3")
-
-
 def load_json() -> None:
-    console.print("loading local objects...", style='green')
+    console.print("loading local objects...", style="green")
     with open(f"{relpath}/userdata/driveObjects.json", "r") as f:
         jsonObj = json.load(f)
     for i in jsonObj:
-        DriveObject(jsonObj[i]['name'], jsonObj[i]['id'], jsonObj[i]['path'])
-        console.print(jsonObj[i]['path'])
-    console.print("done loading", style='green')
+        DriveObject(jsonObj[i]["name"], jsonObj[i]["id"], jsonObj[i]["path"])
+        console.print(jsonObj[i]["path"])
+    console.print("done loading", style="green")
 
 
 def load_drive(_root) -> None:
@@ -183,15 +180,15 @@ def load_drive(_root) -> None:
 
 def sync_drive(_root) -> None:
 
-    #~ Get properties of root object
+    # ~ Get properties of root object
     props = [objects["id"][_root].name, _root, objects["id"][_root].path]
 
-    #~ delete any objects under root path so they can be resynced later
+    # ~ delete any objects under root path so they can be resynced later
     resync = [i for i in objects_all if objects["id"][_root].path in i.path]
     for i in resync:
         i._forget()
 
-    #~ Recreate root object
+    # ~ Recreate root object
     DriveObject(props[0], props[1], props[2])
 
     def rload_drive(_root):

@@ -11,9 +11,9 @@ from googleapiclient.errors import HttpError
 
 # ~ import directly when called from within src otherwise call from src
 try:
-    import main
+    import main, storage
 except:
-    from src import main
+    from src import main, storage
 
 
 # If modifying these scopes, delete the file token.json.
@@ -23,7 +23,6 @@ SCOPES = [
 ]
 
 global service
-service = None
 console = Console()
 
 
@@ -77,31 +76,41 @@ def validate() -> build:
         return None
 
 
+def create(_name, _parent, _path, _type ):
+    requestBody = {
+        "name": _name,
+        "mimeType": _type,
+        "parents": [_parent],
+    }
+    obj = service.files().create(body=requestBody).execute()
+    
+    storage.DriveObject(name=_name, id=obj.get("id"), path=_path)
+
+def deleteFile(_id):
+    storage.objects["id"][_id]._forget()
+    service.files().delete(fileId=_id).execute()
+
 def ls(root) -> list:
-    '''Get all direct children of a drive object'''
+    """Get all direct children of a drive object"""
     page_token = None
     files = []
 
-    while True: 
+    while True:
 
-        #~ Query google drive API for all direct children of current root
-        response = (
-            service.files()
-            .list(
-                q=f"parents = '{root}'",
+        # ~ Query google drive API for all direct children of current root
+        response = service.files().list(
+                q=f"trashed=false and parents = '{root}'",
                 fields="nextPageToken, files(id, name, mimeType)",
-                pageToken=page_token,
-            )
-            .execute()
-        )
+                pageToken=page_token
+            ).execute()
 
-        #~ add all children to return array
+        # ~ add all children to return array
         for file in response.get("files", []):
             files.append(file)
 
-        #~ keep going if there are more pages with children
+        # ~ keep going if there are more pages with children
         page_token = response.get("nextPageToken", None)
         if page_token is None:
             break
-        
+
     return files
