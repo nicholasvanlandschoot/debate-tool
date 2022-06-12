@@ -10,6 +10,7 @@ from rich.console import Console
 
 console = Console()
 
+
 def UDelete(params):
     _, splitted, _, argdict, flags = params
 
@@ -21,12 +22,12 @@ def UDelete(params):
             pass
 
     elif len(splitted) > 1:
-        try: 
+        try:
             _id = storage.objects["name"][splitted[1]].id
         except:
             pass
 
-    if _id != None: 
+    if _id != None:
         gdrive.deleteFile(_id)
 
 
@@ -35,8 +36,8 @@ def UCreate(params):
 
     _name = "Untitled"
     _parent = storage.objects["name"]["root"].id
-    _type = 'application/vnd.google-apps.document'
-    
+    _type = "application/vnd.google-apps.document"
+
     if "-n" in flags:
         try:
             _name = argdict["-n"]
@@ -55,10 +56,9 @@ def UCreate(params):
     _path = f'{storage.objects["id"][_parent].path}/{_name}'
 
     if "-folder" in flags:
-        _type = 'application/vnd.google-apps.folder'
+        _type = "application/vnd.google-apps.folder"
     elif "-doc" in flags:
-        _type = 'application/vnd.google-apps.document'
-
+        _type = "application/vnd.google-apps.document"
 
     gdrive.create(_name, _parent, _path, _type)
 
@@ -154,5 +154,5 @@ functions = {
     "ls": UList,
     "cd": Ucd,
     "create": UCreate,
-    "delete": UDelete
+    "delete": UDelete,
 }

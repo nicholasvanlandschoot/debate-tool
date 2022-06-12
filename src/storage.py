@@ -62,15 +62,14 @@ class DriveObject:
 
     def _forget(self):
 
-        with open (f"{relpath}/userdata/driveObjects.json", "r") as f:
+        with open(f"{relpath}/userdata/driveObjects.json", "r") as f:
             jsonObj = json.load(f)
-        
+
         del jsonObj[self.name]
         jsonObj = json.dumps(jsonObj)
 
-        with open (f"{relpath}/userdata/driveObjects.json", "w") as f:
+        with open(f"{relpath}/userdata/driveObjects.json", "w") as f:
             f.write(jsonObj)
-
 
         # ~ remove from all collections then move to garbage
         objects_all.remove(self)
@@ -212,12 +211,11 @@ def sync_drive(_root) -> None:
 
             console.print(f"{path}/{name}")
 
+            # ~ init and store drive object
+            DriveObject(name, id, f"{path}/{name}")
+
             # ~ Check to see if is folder or items, decreases fetch time as checking item never yields a result
             if i.get("mimeType") == "application/vnd.google-apps.folder":
-
-                # ~ init and store drive object
-                DriveObject(name, id, f"{path}/{name}")
-
                 # ~ create thread to fetch all children
 
                 th = threading.Thread(target=rload_drive(id))

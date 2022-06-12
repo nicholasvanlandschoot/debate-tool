@@ -76,19 +76,21 @@ def validate() -> build:
         return None
 
 
-def create(_name, _parent, _path, _type ):
+def create(_name, _parent, _path, _type):
     requestBody = {
         "name": _name,
         "mimeType": _type,
         "parents": [_parent],
     }
     obj = service.files().create(body=requestBody).execute()
-    
+
     storage.DriveObject(name=_name, id=obj.get("id"), path=_path)
+
 
 def deleteFile(_id):
     storage.objects["id"][_id]._forget()
     service.files().delete(fileId=_id).execute()
+
 
 def ls(root) -> list:
     """Get all direct children of a drive object"""
@@ -98,11 +100,15 @@ def ls(root) -> list:
     while True:
 
         # ~ Query google drive API for all direct children of current root
-        response = service.files().list(
+        response = (
+            service.files()
+            .list(
                 q=f"trashed=false and parents = '{root}'",
                 fields="nextPageToken, files(id, name, mimeType)",
-                pageToken=page_token
-            ).execute()
+                pageToken=page_token,
+            )
+            .execute()
+        )
 
         # ~ add all children to return array
         for file in response.get("files", []):
