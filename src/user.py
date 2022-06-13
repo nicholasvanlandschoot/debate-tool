@@ -10,6 +10,24 @@ from rich.console import Console
 
 console = Console()
 
+def UInsert(params):
+    _, splitted, _, argdict, flags = params
+    _snip = None
+    _location = None
+
+    try: 
+        _snip = splitted[1]
+    except:
+        console.print("error: no snippet given")
+        return None
+    try:
+        _location = argdict["-l"]
+    except:
+        console.print("error: no snippet given")
+        return None
+    
+    gdrive.write_doc(_snip, _location)
+    
 
 def USnip(params):
     _, splitted, _, argdict, flags = params
@@ -173,6 +191,7 @@ def UExit(params):
 
 # ~ bind strings that user can pass as commands to functions
 functions = {
+    "insert": UInsert,
     "snip": USnip,
     "exit": UExit,
     "root": URoot,

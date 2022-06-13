@@ -9,6 +9,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaFileUpload
 
 # ~ import directly when called from within src otherwise call from src
 try:
@@ -199,6 +200,24 @@ def read_structural_elements(elements):
             text += read_structural_elements(toc.get("content"))
     return text
 
+def write_doc(_snip, _location):
+    try:
+        snipFile = storage.snippets[_snip]
+    except:
+        console.print("snippet does not exist", style="red")
+        return None
+    
+    try:
+        _location = storage.objects["name"][_location].id
+    except:
+        console.print(f"{_location} does not exist", style="red")
+        return None
+    
+
+    media_body = MediaFileUpload(
+        storage.snippets[_snip], mimetype='application/vnd.google-apps.document', resumable=True)
+
+    service.files().update(fileId=_location, media_body=media_body).execute()
 
 def fetch_file(_id, _name, _snipName = None):
     global docs_service
@@ -210,7 +229,7 @@ def fetch_file(_id, _name, _snipName = None):
         )
         .execute()
     )
-    with open(f"{storage.relpath}/userdata/snippets/{_name}.docx", "wb") as f:
+    with open(f"{storage.relpath}/userdata/snippets/{_snipName}.docx", "wb") as f:
         f.write(doc_content)
     
     if _snipName == None:

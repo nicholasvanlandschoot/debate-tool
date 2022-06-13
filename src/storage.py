@@ -82,13 +82,11 @@ class DriveObject:
         del self
 
 
-class Snippet:
-    def __init__(self, snippet):
-        self.snippet = snippet
-
 def load_snippets():
+    global snippets
+    
     with open(f"{relpath}/userdata/snippets.json", "r") as f:
-        snippet = json.load(f)
+        snippets = json.load(f)
 
 def store_root(_root) -> dict:
     """Stores new root string to json under "root"
@@ -235,6 +233,3 @@ def sync_drive(_root) -> None:
     rload_drive(_root)
     console.print(f"{time.perf_counter() - startTime} seconds to sync")
 
-
-def store_snippet(_snippet):
-    Snippet(_snippet)

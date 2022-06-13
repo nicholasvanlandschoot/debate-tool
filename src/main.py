@@ -30,7 +30,7 @@ def main() -> None:
 
     # ~ load snippets from cache
     storage.load_snippets()
-    
+
     # ~ load drive objects from drive
     try:
         storage.load_json()
