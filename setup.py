@@ -26,6 +26,11 @@ if not os.path.exists("userdata/driveObjects.json"):
     with open("userdata/driveObjects.json", "w") as f:
         f.write("{}")
 
+if not os.path.exists("userdata/driveObjects.json"):
+    with open("userdata/driveObjects.json", "w") as f:
+        f.write("{}")
+
+
 if not os.path.exists("userdata/snippets.json"):
     with open("userdata/snippets.json", "w") as f:
         f.write("{}")

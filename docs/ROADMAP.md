@@ -9,5 +9,5 @@
 - [X] Sync
 - [X] ls/cd
 - [X] create/delete
-- [ ] save/delete snippet
+- [X] save/delete snippet
 - [ ] insert snippets

@@ -11,6 +11,31 @@ from rich.console import Console
 console = Console()
 
 
+def USnip(params):
+    _, splitted, _, argdict, flags = params
+    _name = None
+    _snipName = None
+
+    if "-n" in flags:
+        try:
+            _snipName = argdict["-n"]
+        except:
+            pass
+
+    if "-l" in flags:
+        try:
+            _name = storage.objects["name"][argdict["-l"]].id
+        except:
+            pass
+
+    elif len(splitted) > 1:
+        try:
+            _name = storage.objects["name"][splitted[1]].id
+        except:
+            pass
+    if _name != None:
+        gdrive.fetch_file(_name, storage.objects['id'][_name].name, _snipName)
+
 def UDelete(params):
     _, splitted, _, argdict, flags = params
 
@@ -148,6 +173,7 @@ def UExit(params):
 
 # ~ bind strings that user can pass as commands to functions
 functions = {
+    "snip": USnip,
     "exit": UExit,
     "root": URoot,
     "sync": USync,

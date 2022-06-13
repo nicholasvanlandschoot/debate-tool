@@ -15,6 +15,9 @@ developerMode = True
 
 def main() -> None:
 
+    # ~ Validate user credentials or login using OAuth
+    gdrive.validate()
+
     # ~ set root if it exists in config otherwise get it from user and store it
     try:
         with open(f"{storage.relpath}/userdata/config.json") as f:
@@ -25,9 +28,9 @@ def main() -> None:
         text.stylize("cyan")
         storage.store_root(console.input(text))
 
-    # ~ Validate user credentials or login using OAuth
-    gdrive.validate()
-
+    # ~ load snippets from cache
+    storage.load_snippets()
+    
     # ~ load drive objects from drive
     try:
         storage.load_json()
