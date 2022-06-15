@@ -11,11 +11,11 @@ except:
     from src import gdrive
 
 relpath = os.getcwd()
+current_file = '1x4mn0Pefae2lvUUXffTPFJRgeNGeaFWW7LM2SPgf-ns'
+
 console = Console()
 
 global root
-root = None
-
 snippets = {}
 
 objects_all = []

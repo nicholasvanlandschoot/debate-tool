@@ -3,6 +3,11 @@ import json
 
 import os.path
 from rich.console import Console
+import docx
+
+from docxcompose.composer import Composer
+from docx import Document
+import io
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -200,24 +205,45 @@ def read_structural_elements(elements):
             text += read_structural_elements(toc.get("content"))
     return text
 
-def write_doc(_snip, _location):
+def copy_doc(_snip):
     try:
-        snipFile = storage.snippets[_snip]
+        _location = storage.snippets[_snip]
     except:
-        console.print("snippet does not exist", style="red")
-        return None
-    
-    try:
-        _location = storage.objects["name"][_location].id
-    except:
-        console.print(f"{_location} does not exist", style="red")
+        console.print(f"{_snip} does not exist", style="red")
         return None
     
 
+    doc_content = (
+        service.files()
+        .export(
+            fileId=storage.current_file,
+            mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
+        .execute()
+    )
+
+    with open(f"{storage.relpath}/userdata/snippets/current.docx", "wb") as f:
+        f.write(doc_content)
+    with open(f"{storage.relpath}/userdata/snippets/current.docx", "rb") as f:
+        source_stream = io.BytesIO(f.read())
+
+    master = Document(source_stream)
+
+
+    composer = Composer(master)
+    #filename_second_docx is the name of the second docx file
+    doc2 = Document(_location)
+    composer.append(doc2)
+
+    #Save the combined docx with a name
+    composer.save(f"{storage.relpath}/userdata/docx/combined.docx")
+
+    #Serialize current docx to google format 
     media_body = MediaFileUpload(
-        storage.snippets[_snip], mimetype='application/vnd.google-apps.document', resumable=True)
+        f"{storage.relpath}/userdata/docx/combined.docx", mimetype="application/vnd.google-apps.document", resumable=True)
 
-    service.files().update(fileId=_location, media_body=media_body).execute()
+    service.files().update(fileId=storage.current_file, media_body=media_body).execute()
+
 
 def fetch_file(_id, _name, _snipName = None):
     global docs_service
@@ -243,3 +269,5 @@ def fetch_file(_id, _name, _snipName = None):
     jsonObj = json.dumps(jsonObj)
     with open(f"{storage.relpath}/userdata/snippets.json", "w") as f:
         f.write(jsonObj)
+    
+    storage.snippets.update({_snipName:f"{storage.relpath}/userdata/snippets/{_snipName}.docx"})
